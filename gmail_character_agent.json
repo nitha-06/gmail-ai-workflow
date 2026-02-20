@@ -1,0 +1,131 @@
+{
+  "name": "gmail_character_agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "summarize last two mails\n",
+        "options": {
+          "systemMessage": "You are an email assistant.\n\nYour task is to determine the user's intent and execute ONE of the following actions:\n\n1. Summarize an email\n2. Send an email\n3. Summarize an email and send the summary\n\nYou must always choose the appropriate action based on the user’s request.\n\nExecution rules:\n\n- If email content is provided and user asks to summarize → summarize it.\n- If recipient and message details are provided and user asks to send → prepare sending action.\n- If both are requested → summarize first, then prepare sending.\n- If required information is missing, still return an execution report with Status: Success and state what was attempted.\n\nAfter completing the task, return summary of the emails.\n\nMandatory Output Format:\n\n- If summarized: state the email summary.\n- If sent: Email was sent to <recipient_email>.\n- If both: Email was summarized and sent to <recipient_email>.\n\nStatus:\nSuccess\n\nRules:\n- Do not include unecessarycontent unless explicitly requested.\n- Do not explain reasoning.\n- Do not add greetings.\n- Do not add extra text.\n- Always return the execution report.\n- Never return an empty response.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [576, 0],
+      "id": "6eb16895-dde4-4625-898e-7822fda7f296",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [480, 256],
+      "id": "3c705bf2-e6fc-482b-b35d-5c9f1ebe728d",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [208, 0],
+      "id": "06240597-15ea-45b4-b3a1-42ee938191cc",
+      "name": "When chat message received",
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [736, 208],
+      "id": "35f4253b-8eeb-4aff-bd82-e44d22717216",
+      "name": "Get many messages in Gmail"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [832, 304],
+      "id": "8c1f1a48-f547-47e8-9a87-c908744949ad",
+      "name": "Get many messages in Gmail1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [[]]
+    },
+    "Get many messages in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages in Gmail1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": ""
+  },
+  "id": "oB6wHgTZ8ZPfK2D3",
+  "tags": []
+}
